@@ -16,7 +16,9 @@ async function main() {
     // We get the contract to deploy
 
     const Airdrop = await hre.ethers.getContractFactory("Airdrop");
-    const airdrop = await Airdrop.deploy();
+
+    // Add constructor values for nft and admin address
+    const airdrop = await Airdrop.deploy(nft_address, admin_address);
 
     await airdrop.deployed();
 
