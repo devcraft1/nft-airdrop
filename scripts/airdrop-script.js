@@ -1,32 +1,15 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// When running the script with `npx hardhat run <script>` you'll find the Hardhat
-// Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
+const admin_address = "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"
+const nft_address = "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"
 
 async function main() {
-    // Hardhat always runs the compile task when running scripts with its command
-    // line interface.
-    //
-    // If this script is run directly using `node` you may want to call compile
-    // manually to make sure everything is compiled
-    // await hre.run('compile');
-
-    // We get the contract to deploy
-
     const Airdrop = await hre.ethers.getContractFactory("Airdrop");
-
     // Add constructor values for nft and admin address
     const airdrop = await Airdrop.deploy(nft_address, admin_address);
-
     await airdrop.deployed();
-
     console.log("Airdrop contract deployed to:", airdrop.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main()
     .then(() => process.exit(0))
     .catch((error) => {
