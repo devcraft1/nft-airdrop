@@ -2,24 +2,20 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract Airdrop {
+contract Airdrop is ERC721 {
     address public admin;
     mapping(address => bool) public processedAirdrops;
-    IERC721 public nftAddress;
-    uint256 public totalAidropClaimed;
 
-    event AirdropProcessed(
-        address distributor,
-        address receiver,
-        uint256 toknId,
-        uint256 date
-    );
+    event AirdropProcessed(address receiver, uint256 toknId, uint256 date);
 
-    constructor(address _nft, address _admin) {
+    constructor(
+        string memory name,
+        string memory symbol,
+        address _admin
+    ) ERC721(name, symbol) {
         admin = _admin;
-        nftAddress = IERC721(_nft);
     }
 
     function updateAdmin(address newAdmin) external {
@@ -27,14 +23,13 @@ contract Airdrop {
         admin = newAdmin;
     }
 
-    function claimNft(
-        address distributor,
+    function claim(
         address receiver,
         uint256 tokenId,
         bytes calldata signature
     ) external {
         bytes32 message = prefixed(
-            keccak256(abi.encodePacked(distributor, receiver, tokenId))
+            keccak256(abi.encodePacked(receiver, tokenId))
         );
         require(recoverSigner(message, signature) == admin, "wrong signature");
         require(
@@ -42,9 +37,8 @@ contract Airdrop {
             "airdrop already processed"
         );
         processedAirdrops[receiver] = true;
-        nftAddress.transferFrom(distributor, receiver, tokenId);
-        emit AirdropProcessed(distributor, receiver, tokenId, block.timestamp);
-        totalAidropClaimed++;
+        _safeMint(receiver, tokenId);
+        emit AirdropProcessed(receiver, tokenId, block.timestamp);
     }
 
     function prefixed(bytes32 hash) internal pure returns (bytes32) {
