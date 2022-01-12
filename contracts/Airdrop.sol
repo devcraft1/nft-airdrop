@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 contract Airdrop is ERC721 {
     address public admin;
     mapping(address => bool) public processedAirdrops;
+    uint256 public claimedNft;
 
     event AirdropProcessed(address receiver, uint256 toknId, uint256 date);
 
